@@ -9,7 +9,7 @@ def val_get(args, val_dataloader, model, loss, data_dict, ema):
         pred = []
         true = []
         val_loss = 0
-        tqdm_len = len(data_dict['val']) // args.batch * args.device_number
+        tqdm_len = (len(data_dict['val']) - 1) // (args.batch // args.device_number) + 1
         tqdm_show = tqdm.tqdm(total=tqdm_len, mininterval=0.2)
         for index, (input_data_batch, edge_index, true_batch) in enumerate(val_dataloader):
             input_data_batch = input_data_batch.to(args.device, non_blocking=args.latch)
