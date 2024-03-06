@@ -122,7 +122,7 @@ class torch_dataset(torch.utils.data.Dataset):
         data = self.data[index]
         input_data = data.x
         edge_index = data.edge_index
-        true = data.y[:, self.label_index]
+        true = eval(self.label_function).type(torch.float32)
         return input_data, edge_index, true
 
     def collate_fn(self, getitem_list):  # 自定义__getitem__的合并方式
