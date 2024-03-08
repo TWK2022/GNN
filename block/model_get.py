@@ -6,8 +6,8 @@ def model_get(args):
     if os.path.exists(args.weight):
         model_dict = torch.load(args.weight, map_location='cpu')
     else:
-        choice_dict = {'graph_sage': 'model_prepare(args).graph_sage()',
-                       }
+        choice_dict = {'gcn': 'model_prepare(args).graph_sage()',
+                       'graph_sage': 'model_prepare(args).graph_sage()'}
         model = eval(choice_dict[args.model])
         model_dict = {}
         model_dict['model'] = model
@@ -21,6 +21,11 @@ def model_get(args):
 class model_prepare:
     def __init__(self, args):
         self.args = args
+
+    def gcn(self):
+        from model.gcn import gcn
+        model = gcn(self.args)
+        return model
 
     def graph_sage(self):
         from model.graph_sage import graph_sage
