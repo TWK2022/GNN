@@ -16,7 +16,7 @@ def val_get(args, val_dataloader, model, loss, data_dict, ema):
             edge_index = edge_index.to(args.device, non_blocking=args.latch)
             true_batch = true_batch.to(args.device, non_blocking=args.latch)
             pred_batch = model(input_data_batch, edge_index)
-            loss_batch = loss(pred_batch, true_batch)
+            loss_batch = loss(pred_batch[mask], true_batch[mask])
             val_loss += loss_batch.item()
             pred.extend(pred_batch.cpu())
             true.extend(true_batch.cpu())
