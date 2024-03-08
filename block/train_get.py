@@ -41,14 +41,14 @@ def train_get(args, data_dict, model_dict, loss):
         train_loss = 0  # 记录损失
         if args.local_rank == 0:  # tqdm
             tqdm_show = tqdm.tqdm(total=step_epoch, mininterval=0.2)
-        for index, (input_data_batch, edge_index, true_batch) in enumerate(train_dataloader):
+        for index, (input_data_batch, edge_index, true_batch, mask) in enumerate(train_dataloader):
             input_data_batch = input_data_batch.to(args.device, non_blocking=args.latch)
             edge_index = edge_index.to(args.device, non_blocking=args.latch)
             true_batch = true_batch.to(args.device, non_blocking=args.latch)
             if args.amp:
                 with torch.cuda.amp.autocast():
                     pred_batch = model(input_data_batch, edge_index)
-                    loss_batch = loss(pred_batch, true_batch)
+                    loss_batch = loss(pred_batch[mask], true_batch[mask])
                 args.amp.scale(loss_batch).backward()
                 args.amp.step(optimizer)
                 args.amp.update()
@@ -91,20 +91,17 @@ def train_get(args, data_dict, model_dict, loss):
             model_dict['ema_updates'] = ema.updates if args.ema else model_dict['ema_updates']
             model_dict['train_loss'] = train_loss
             model_dict['val_loss'] = val_loss
-            model_dict['val_mae'] = mae
-            model_dict['val_mse'] = mse
+            model_dict['val_loss'] = mae
+            model_dict['val_loss'] = mse
             torch.save(model_dict, 'last.pt')  # 保存最后一次训练的模型
-            if mse < 1 and mse < model_dict['standard']:
-                model_dict['standard'] = mse
+            if val_loss < 1 and val_loss < model_dict['standard']:
+                model_dict['standard'] = val_loss
                 torch.save(model_dict, args.save_path)  # 保存最佳模型
-                print(f'\n| 保存最佳模型:{args.save_path} | val_loss:{val_loss:.4f} | val_mae:{mae:.4f} |'
-                      f' val_mse:{mse:.4f} |\n')
+                print(f'\n| 保存最佳模型:{args.save_path} | val_loss:{val_loss:.4f} |\n')
             # wandb
             if args.wandb:
                 args.wandb_run.log({'metric/train_loss': train_loss,
-                                    'metric/val_loss': val_loss,
-                                    'metric/val_mae': mae,
-                                    'metric/val_mse': mse})
+                                    'metric/val_loss': val_loss})
         torch.distributed.barrier() if args.distributed else None  # 分布式时每轮训练后让所有GPU进行同步，快的GPU会在此等待
 
 
@@ -113,7 +110,7 @@ class torch_dataset(torch.utils.data.Dataset):
         self.data = data
         self.input_size = args.input_size
         self.output_size = args.output_size
-        self.label_index = args.label_index
+        self.label_function = args.label_function
 
     def __len__(self):
         return len(self.data)
@@ -122,14 +119,17 @@ class torch_dataset(torch.utils.data.Dataset):
         data = self.data[index]
         input_data = data.x
         edge_index = data.edge_index
-        true = eval(self.label_function).type(torch.float32)
-        return input_data, edge_index, true
+        true = eval(self.label_function)
+        mask = data.train_mask
+        return input_data, edge_index, true, mask
 
     def collate_fn(self, getitem_list):  # 自定义__getitem__的合并方式
         input_data_list = [_[0] for _ in getitem_list]
         edge_index_list = [_[1] for _ in getitem_list]
         true_list = [_[2] for _ in getitem_list]
+        mask_list = [_[3] for _ in getitem_list]
         input_data_batch = torch.concat(input_data_list, dim=0)
         edge_index = edge_index_list[0]
         true_batch = torch.concat(true_list, dim=0)
-        return input_data_batch, edge_index, true_batch
+        mask = mask_list[0]
+        return input_data_batch, edge_index, true_batch, mask
