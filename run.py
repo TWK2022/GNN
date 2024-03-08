@@ -33,7 +33,7 @@ parser.add_argument('--save_path', default='best.pt', type=str, help='|保存最
 parser.add_argument('--epoch', default=300, type=int, help='|训练总轮数(包含之前已训练轮数)|')
 parser.add_argument('--batch', default=1, type=int, help='|训练批量大小，分布式时为总组数。数据是一组组的点，共用edge_index，'
                                                          '因此实际batch=batch*每组点数，建议为设备数|')
-parser.add_argument('--loss', default='cross', type=str, help='|损失函数|')
+parser.add_argument('--loss', default='cross', type=str, help='|损失函数，注意分类和数值预测任务要用不同的损失函数|')
 parser.add_argument('--warmup_ratio', default=0.01, type=float, help='|预热训练步数占总步数比例，最少5步，基准为0.01|')
 parser.add_argument('--lr_start', default=0.01, type=float, help='|初始学习率，adam算法，批量小时要减小，基准为0.01|')
 parser.add_argument('--lr_end_ratio', default=0.1, type=float, help='|最终学习率=lr_end_ratio*lr_start，基准为0.1|')
