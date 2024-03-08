@@ -48,6 +48,7 @@ parser.add_argument('--amp', default=True, type=bool, help='|混合float16精度
 parser.add_argument('--distributed', default=False, type=bool, help='|单机多卡分布式训练，分布式训练时batch为总batch|')
 parser.add_argument('--local_rank', default=0, type=int, help='|分布式训练使用命令后会自动传入的参数|')
 args = parser.parse_args()
+args.amp = False if args.divide == 'cpu' else args.amp
 args.divide = list(map(int, args.divide.split(',')))
 args.device_number = max(torch.cuda.device_count(), 1)  # 使用的GPU数，可能为CPU
 # 为CPU设置随机种子
