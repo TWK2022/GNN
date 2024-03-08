@@ -55,7 +55,7 @@ def train_get(args, data_dict, model_dict, loss):
                 optimizer.zero_grad()
             else:
                 pred_batch = model(input_data_batch, edge_index)
-                loss_batch = loss(pred_batch, true_batch)
+                loss_batch = loss(pred_batch[mask], true_batch[mask])
                 loss_batch.backward()
                 optimizer.step()
                 optimizer.zero_grad()
