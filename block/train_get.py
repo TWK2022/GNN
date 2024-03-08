@@ -120,6 +120,7 @@ class torch_dataset(torch.utils.data.Dataset):
         input_data = data.x
         edge_index = data.edge_index
         true = eval(self.label_function)
+        true = true.unsqueeze(1) if len(true.shape) == 1 else true
         mask = data.train_mask if hasattr(data, 'train_mask') else [True for _ in range(len(data.x))]
         return input_data, edge_index, true, mask
 
