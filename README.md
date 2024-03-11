@@ -7,7 +7,7 @@
 >pip install tqdm wandb torch_geometric -i https://pypi.tuna.tsinghua.edu.cn/simple
 >```
 ### 2，数据格式
->参考data_demo中的样例
+>torch_geometric.data.Data保存为的.pt文件：包含x、edge_index、y等
 ### 3，run.py
 >模型训练时运行该文件，argparse中有对每个参数的说明
 ### 4，predict_pt.py
