@@ -9,7 +9,7 @@ from block.train_get import train_get
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # 数据格式(.pt)：
-# torch_geometric.data.Data格式：包含x、edge_index、y
+# torch_geometric.data.Data保存为的.pt文件：包含x、edge_index、y等
 # -------------------------------------------------------------------------------------------------------------------- #
 # 分布式训练：
 # python -m torch.distributed.launch --master_port 9999 --nproc_per_node n run.py --distributed True
