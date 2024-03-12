@@ -79,8 +79,7 @@ def data_validation():
         # tqdm
         tqdm_show.close()
     end_time = time.time()
-    print('| 数据:{} 批量:{} 平均耗时:{:.4f} |'
-          .format(args.data_path, args.batch, (end_time - start_time) / len(data) / pred_batch.shape[0]))
+    print('| 数据:{} 批量:{} 平均耗时:{:.4f} |'.format(args.data_path, 1, (end_time - start_time) / len(data)))
     # 计算指标
     val_loss /= (index + 1)
     if args.loss != 'cross':  # 预测数值
