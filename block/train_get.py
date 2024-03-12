@@ -91,8 +91,8 @@ def train_get(args, data_dict, model_dict, loss):
             model_dict['ema_updates'] = ema.updates if args.ema else model_dict['ema_updates']
             model_dict['train_loss'] = train_loss
             model_dict['val_loss'] = val_loss
-            model_dict['val_loss'] = mae
-            model_dict['val_loss'] = mse
+            model_dict['val_mae'] = mae
+            model_dict['val_mse'] = mse
             torch.save(model_dict, 'last.pt')  # 保存最后一次训练的模型
             if val_loss < 1 and val_loss < model_dict['standard']:
                 model_dict['standard'] = val_loss
