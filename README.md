@@ -10,7 +10,7 @@
 >torch_geometric.data.Data保存为的.pt文件：包含x、edge_index、y等
 ### 3，run.py
 >模型训练时运行该文件，argparse中有对每个参数的说明
-### 4，predict_pt.py
->使用训练好的pt模型预测
+### 4，data_validation.py
+>用已经训练好的模型对数据进行验证，可以查看哪些数据的损失较大，检查是否有异常
 ### 其他
 >学习笔记：https://github.com/TWK2022/notebook
