@@ -97,7 +97,7 @@ def train_get(args, data_dict, model_dict, loss):
             if val_loss < 1 and val_loss < model_dict['standard']:
                 model_dict['standard'] = val_loss
                 torch.save(model_dict, args.save_path)  # 保存最佳模型
-                print(f'\n| 保存最佳模型:{args.save_path} | val_loss:{val_loss:.4f} |\n')
+                print(f'| 保存最佳模型:{args.save_path} | val_loss:{val_loss:.4f} |')
             # wandb
             if args.wandb:
                 args.wandb_run.log({'metric/train_loss': train_loss,
